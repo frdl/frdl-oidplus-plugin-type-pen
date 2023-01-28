@@ -190,64 +190,71 @@ class OIDplusIanaPen extends OIDplusObject {
 		
 	      $title = $this->getTitle();
    
+		$content.='<a href="?goto=oidplus%3Asystem" onclick="openOidInPanel(\''.self::ns().':\', true); return false;">
+		<img src="img/arrow_back.png" alt="Go back" width="16">Private Enterprise Numbers</a>';
+		
+		
+		 $content.='<div style="display:block;margin:15px;padding:2px;min-height:480px;">';
+		
 		  //  $content.='Re: '.$this->getRaMail();
 		   $content.= '<p>'.$this->getDescription().'</p>';
 		
 		  foreach($this->getData() as $k => $v){
-			  if('email'===$k){
-				//$v = str_replace('@', ' & ', $v);  
-				  $v = self::secmail($v);
-			  }
-			  $content.= '<p><legend>'.ucfirst($k).'</legend>'.$v.'</p>'; 
+			  switch($k){
+				  case 'oid' : 	
+					    $k = 'OID';
+					  break;
+				  case 'id' : 			 
+				        $v = 'iana-pen:'.$v;
+					    $k = 'ID';
+					  break;
+				  case 'email' : 					  
+			          	//$v = str_replace('@', ' & ', $v);  
+				        $v = self::secmail($v);
+					    $k = 'Email/Registration-Authority';
+					  break;
+				  case 'org' :  
+				        $k = 'Organisation';
+					  break;
+				  case 'name' :  
+				        $k = 'Name/Person';
+					  break;
+				  default:
+					  break;
+			  } 
+			  $content.= '<p><legend style="display:inline;float:left;">'.ucfirst($k)
+				  .'</legend><span style="display:inline;float:right;max-width:320px;">'.$v.'</span></p>'; 
 		  }
-			
-		  $weid = \Frdl\Weid\WeidOidConverter::oid2weid($this->getDotNotation());
-		  $content.= '<p><legend>WEID</legend>'.$weid.'</p>'; 
-		
-		
-	 		if ( $this->pen === self::root()  ) {
+	 	
+	 		if ($this->nodeId(true) === self::root()  ) {
 				if (OIDplus::authUtils()->isAdminLoggedIn()) {
 					$content .= '<h2>'._L('Manage root objects').'</h2>';
 					$content .= _L('@ToDo PEN Root/List...');
 				} else {
 					$content .= '<h2>'._L('Available PENs').'</h2>';
 				}
-				$content .= '%%CRUD%%';
-		 	}
+				//$content .= '%%CRUD%%';
+				$content .= 'You can either look up the <a href="?goto='.urlencode(rtrim('oid:'.self::PREFIX.$this->pen, '.')).'">'
+					.'look up the parent OID</a> or do a lookup or a search for '
+					.'<form action="" method="GET" class="input-group">'
+					.'<input type="text" 
+					    placeholder="enter a local PEN-ID, an OID, an E-Mail, name or searchterm...!"
+					    name="goto" oninput="this.value=\'pen:\' + this.value.replace(/pen\:/, \'\').trim();" />'
+					.'<button class="btn btn-outline-secondary bg-white border-start-0 border rounded-pill ms-n3" type="button">'
+					.'<i class="fa fa-search">Search...</i>'
+					.'</button></form>'
+					;
+		 	}else{
+		      $weid = \Frdl\Weid\WeidOidConverter::oid2weid($this->getDotNotation());
+		      $content.= '<p><legend style="display:inline;float:left;">WEID</legend>
+			  <span style="display:inline;float:right;max-width:320px;">'.$weid.'</span></p>'; 		
+				
+				///$content .= '%%CRUD%%';
+			}
 		
-		/*
-		if ($this->isRoot()) {
-			$title = self::objectTypeTitle();
-
-			$content  = _L('@ToDo PEN Root/List...');
-
-			if (!$this->isLeafNode()) {
-				if (OIDplus::authUtils()->isAdminLoggedIn()) {
-					$content .= '<h2>'._L('Manage root objects').'</h2>';
-				} else {
-					$content .= '<h2>'._L('Available PENs').'</h2>';
-				}
-				$content .= '%%CRUD%%';
-			}
-		} else {
-			$title = $this->getTitle();
-
-			$content = '<h2>'._L('Description').'</h2>%%DESC%%'; // TODO: add more meta information about the object type
-
-               $content .= print_r($this->getData(), true);
-
-			if (!$this->isLeafNode()) {
-				if ($this->userHasWriteRights()) {
-					$content .= '<h2>'._L('Create or change subordinate objects').'</h2>';
-				} else {
-					$content .= '<h2>'._L('Subordinate objects').'</h2>';
-				}
-				$content .= '%%CRUD%%';
-			}
-		}
-		*/
+           $content.='</div>';
 	}
-/* */
+
 	
 	public function userHasWriteRights($ra_email=null) {			
 		return false;		
