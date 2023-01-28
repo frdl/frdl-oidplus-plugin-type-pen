@@ -190,9 +190,10 @@ class OIDplusIanaPen extends OIDplusObject {
 		
 	      $title = $this->getTitle();
    
-		$content.='<a href="?goto=oidplus%3Asystem" onclick="openOidInPanel(\''.self::ns().':\', true); return false;">
-		<img src="img/arrow_back.png" alt="Go back" width="16">Private Enterprise Numbers</a>';
-		
+		if ($this->nodeId(true) !== self::root()  ) {
+		  $content.='<a href="?goto=oidplus%3Asystem" onclick="openOidInPanel(\''.self::ns().':\', true); return false;">
+		  <img src="img/arrow_back.png" alt="Go back" width="16">Private Enterprise Numbers</a>';  
+		}
 		
 		 $content.='<div style="display:block;margin:15px;padding:2px;min-height:480px;">';
 		
