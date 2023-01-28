@@ -241,7 +241,7 @@ class OIDplusIanaPen extends OIDplusObject {
 					.'<input type="text" 
 					    placeholder="enter a local PEN-ID, an OID, an E-Mail, name or searchterm...!"
 					    name="goto" oninput="this.value=\'pen:\' + this.value.replace(/pen\:/, \'\').trim();" />'
-					.'<button class="btn btn-outline-secondary bg-white border-start-0 border rounded-pill ms-n3" type="button">'
+					.'<button class="btn btn-outline-secondary bg-white border-start-0 border rounded-pill ms-n3">'
 					.'<i class="fa fa-search">Search...</i>'
 					.'</button></form>'
 					;
