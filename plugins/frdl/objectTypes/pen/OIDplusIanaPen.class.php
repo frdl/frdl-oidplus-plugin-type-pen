@@ -29,14 +29,17 @@ class OIDplusIanaPen extends OIDplusObject {
 	
 	//const PREFIX = 'oid:1.3.6.1.4.1.';
 	const PREFIX = '1.3.6.1.4.1.';
-	
-	protected $pen;
+    protected $pen;
     protected $data = null;
     protected $Fetcher = null;
 
 	public function __construct($pen) {
 		// No syntax checks
 		$this->pen = $pen; 
+		//doch!
+		if(!is_numeric($this->pen)){
+		  $this->pen = $this->getData()['id'];	
+		}
 	}
 	
 	public function getDotNotation(){
