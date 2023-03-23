@@ -45,7 +45,35 @@ class OIDplusIanaPen extends OIDplusObject {
 	public function getDotNotation(){
 		return rtrim(self::PREFIX.$this->pen, '.');
 	}
-	
+
+	public function getWeidNotation($withAbbr=true) {
+		$weid = \Frdl\Weid\WeidOidConverter::oid2weid($this->getDotNotation());
+		if ($withAbbr) {
+			$ary = explode(':', $weid);
+			$weid = array_pop($ary); // remove namespace and sub-namespace if existing
+			$ns = implode(':', $ary).':';
+
+			$weid_arcs = explode('-', $weid);
+			foreach ($weid_arcs as $i => &$weid) {
+				if ($i == count($weid_arcs)-1) {
+					$weid = '<abbr title="'._L('weLuhn check digit').'">'.$weid.'</abbr>';
+				} else {
+					$oid_arcs = explode('.',$this->oid);
+					$weid_num = $oid_arcs[(count($oid_arcs)-1)-(count($weid_arcs)-1)+($i+1)];
+					if ($weid_num != $weid) {
+						$weid = '<abbr title="'._L('Numeric value').': '.$weid_num.'">'.$weid.'</abbr>';
+					}
+				}
+			}
+			$base_arc = '???';
+			if ($ns === 'weid:')      $base_arc = '1.3.6.1.4.1.37553.8';
+			if ($ns === 'weid:pen:')  $base_arc = '1.3.6.1.4.1';
+			if ($ns === 'weid:root:') $base_arc = _L('OID tree root');
+
+			$weid = '<abbr title="'._L('Base OID').': '.$base_arc.'">' . rtrim($ns,':') . '</abbr>:' . implode('-',$weid_arcs);
+		}
+		return $weid;
+	}	
 	public function getCanonicalOid() {
 		return $this->getDotNotation();
 	}
