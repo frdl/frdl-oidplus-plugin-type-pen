@@ -29,7 +29,8 @@ class OIDplusIanaPen extends OIDplusObject {
 	
 	//const PREFIX = 'oid:1.3.6.1.4.1.';
 	const PREFIX = '1.3.6.1.4.1.';
-    protected $pen;
+	
+	protected $pen;
     protected $data = null;
     protected $Fetcher = null;
 
@@ -37,7 +38,7 @@ class OIDplusIanaPen extends OIDplusObject {
 		// No syntax checks
 		$this->pen = $pen; 
 		//doch!
-		if(!is_numeric($this->pen)){
+		if(!is_numeric($this->pen) && is_array($this->getData()) ){
 		  $this->pen = $this->getData()['id'];	
 		}
 	}
@@ -45,7 +46,7 @@ class OIDplusIanaPen extends OIDplusObject {
 	public function getDotNotation(){
 		return rtrim(self::PREFIX.$this->pen, '.');
 	}
-
+	
 	public function getWeidNotation($withAbbr=true) {
 		$weid = \Frdl\Weid\WeidOidConverter::oid2weid($this->getDotNotation());
 		if ($withAbbr) {
@@ -73,7 +74,8 @@ class OIDplusIanaPen extends OIDplusObject {
 			$weid = '<abbr title="'._L('Base OID').': '.$base_arc.'">' . rtrim($ns,':') . '</abbr>:' . implode('-',$weid_arcs);
 		}
 		return $weid;
-	}	
+	}
+	
 	public function getCanonicalOid() {
 		return $this->getDotNotation();
 	}
@@ -88,17 +90,6 @@ class OIDplusIanaPen extends OIDplusObject {
 	
 	public function getFetcher() {
 		if(null === $this->Fetcher ){
-		  if(!class_exists(\Frdlweb\IanaPenListFetcher::class)){
-			if(!file_exists(__DIR__.\DIRECTORY_SEPARATOR.'IanaPenListFetcher.class.php')){
-				file_put_contents(__DIR__.\DIRECTORY_SEPARATOR.'IanaPenListFetcher.class.php',
-			     file_get_contents(
-			      'https://raw.githubusercontent.com/frdl/iana-enterprise-numbers-fetcher/main/src/IanaPenListFetcher.class.php'
-			    ));
-			}
-			
-			require_once __DIR__.\DIRECTORY_SEPARATOR.'IanaPenListFetcher.class.php';
-		  }						
-			
 		  $this->Fetcher = new \Frdlweb\IanaPenListFetcher();
 		}
 		return $this->Fetcher;
@@ -128,25 +119,25 @@ class OIDplusIanaPen extends OIDplusObject {
 	  return $object;
 	}
 
-	public static function objectTypeTitle() {
+	public static function objectTypeTitle(): string {
 		return _L('IANA Enterprise Numbers');
 	}
 
-	public static function objectTypeTitleShort() {
+	public static function objectTypeTitleShort(): string {
 		return _L('PEN');
 	}
 
-	public static function ns() {
+	public static function ns() : string {
 	//return 'iana-pen';
 		return 'pen';
 	}
 
-	public static function root() {
+	public static function root() : string{
 		return self::ns().':';
 		//return 'oid:1.3.6.1.4.1';
 	}
 
-	public function isRoot() {
+	public function isRoot() :bool{
 		// Ärghühhh????// 
 	 
 		return// 0===0 ||
@@ -162,7 +153,7 @@ class OIDplusIanaPen extends OIDplusObject {
 	
 
 	
-	public static function exists(string $id) {
+	public static function exists(string $id): bool {
 		return $id === self::root() || is_array((new self(ltrim($id,self::ns().':')))->getData());
 	}
 	/**/
@@ -172,16 +163,16 @@ class OIDplusIanaPen extends OIDplusObject {
 		//return new OIDplusOid( rtrim('1.3.6.1.4.1.'.$this->pen, '.')	);
 		//return $this; 
 	}
-	public function nodeId($with_ns=true) {
+	public function nodeId(bool $with_ns = true): string {
 		return $with_ns ? self::root().$this->pen : $this->pen;
 	}
 
-	public function addString($str) {
+	public function addString(string $str) : string{
 		throw new \Exception('You are not allowed to add a node on this non-authoritive OID-Service. '
 		.'You must add this PEN as OID to the system first.');
 	}
 
-	public function crudShowId(OIDplusObject $parent) {
+	public function crudShowId(\ViaThinkSoft\OIDplus\OIDplusObject $parent): string {
 		if ($parent->isRoot()) {
 			return substr($this->nodeId(), strlen($parent->nodeId()));
 		}else{
@@ -189,7 +180,7 @@ class OIDplusIanaPen extends OIDplusObject {
 		}
 	}
 
-	public function jsTreeNodeName(OIDplusObject $parent = null) {
+	public function jsTreeNodeName(?\ViaThinkSoft\OIDplus\OIDplusObject $parent = null): string{
 		if ($parent == null) return $this->objectTypeTitle();
 		if ($parent->isRoot()) {
 			return substr($this->nodeId(), strlen($parent->nodeId()));
@@ -198,17 +189,17 @@ class OIDplusIanaPen extends OIDplusObject {
 		}
 	}
 
-	public function defaultTitle() {
+	public function defaultTitle() :string{
 		return $this->nodeId(true) === self::root() ? self::objectTypeTitle() : $this->getData()['org'].' ('.$this->getCanonicalOid().')';
 	}
-	public function getTitle() {
+	public function getTitle()  :string{
 		return $this->defaultTitle();
 	}
-	public function getDescription() {
+	public function getDescription()  :string{
 		return $this->getCanonicalOid().' is a Private Enterprise Number assigned by IANA for '.$this->getData()['org']
 			.', it should be listed at https://www.iana.org/assignments/enterprise-numbers/enterprise-numbers .';
 	}	
-	public function isLeafNode() {
+	public function isLeafNode() :bool{
 		return true;
 	}
 	
@@ -288,7 +279,7 @@ class OIDplusIanaPen extends OIDplusObject {
 	}
 
 	
-	public function userHasWriteRights($ra_email=null) {			
+	public function userHasWriteRights($ra = null): bool  {			
 		return false;		
 	}	
     	
@@ -296,15 +287,15 @@ class OIDplusIanaPen extends OIDplusObject {
 		return false;		
 	}	
     
-	public function userHasReadRights($ra_email=null) {	 
+	public function userHasReadRights($ra = null): bool{	 
 		return true;     
 	}
 	
-	public function isConfidential() {     
+	public function isConfidential():bool {     
 		return false;    
 	}
 	
-	public function getRa() {
+	public function getRa(): \ViaThinkSoft\OIDplus\OIDplusRA{
 		return new OIDplusRA($this->getRaMail());
 	}
 	
@@ -314,7 +305,7 @@ class OIDplusIanaPen extends OIDplusObject {
 		return $obj;   
 	 } 
 
-	public static function treeIconFilename($mode) {
+	public static function treeIconFilename(string $mode): string{
 		return 'img/'.$mode.'_icon16.png';
 	}
 	//public function distance($to) {
