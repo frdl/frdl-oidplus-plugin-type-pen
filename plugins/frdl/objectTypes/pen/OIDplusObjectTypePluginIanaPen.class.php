@@ -59,7 +59,7 @@ class OIDplusObjectTypePluginIanaPen extends OIDplusObjectTypePlugin {
 		   ];			
 		}		
 	}
-	public static function getObjectTypeClassName() {
+	public static function getObjectTypeClassName():string {
 		return OIDplusIanaPen::class;
 	}
 	
@@ -110,7 +110,7 @@ class OIDplusObjectTypePluginIanaPen extends OIDplusObjectTypePlugin {
 		}
 	}
 	
-	public function implementsFeature($id) {
+	public function implementsFeature(string $id): bool {
 		if (strtolower($id) == '1.3.6.1.4.1.37476.2.5.2.3.4') return true; // whois*Attributes 
 		return false;
 	}
