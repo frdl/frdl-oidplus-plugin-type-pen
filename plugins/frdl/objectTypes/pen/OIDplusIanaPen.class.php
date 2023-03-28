@@ -41,6 +41,8 @@ class OIDplusIanaPen extends OIDplusObject {
 		if(!is_numeric($this->pen) && is_array($this->getData()) ){
 		  $this->pen = $this->getData()['id'];	
 		}
+		$this->pen = trim($this->pen, '. ');
+		//$this->getData();
 	}
 	
 	public function getDotNotation(){
@@ -118,12 +120,13 @@ class OIDplusIanaPen extends OIDplusObject {
 		//$pen = $pen !== self::root() && $pen !== 'oid:1.3.6.1.4.1' && $namespace === self::ns() && is_numeric($pen) ? intval($pen) : $pen;
  */
 		$object = new self($pen);
-		/*
+	/*	
 		if( $pen && $pen.':' !== self::root()  && 
 		   !$object->isRoot() && !is_array($object->getData()) )return false;
 		
 		if(!is_array($object->getData())  && $pen.':' !== self::root() )return false;
-		 */
+		
+		$object->getData(); */
 	  return $object;
 	}
 
