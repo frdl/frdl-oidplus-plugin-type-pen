@@ -59,7 +59,7 @@ class OIDplusIanaPen extends OIDplusObject {
 				if ($i == count($weid_arcs)-1) {
 					$weid = '<abbr title="'._L('weLuhn check digit').'">'.$weid.'</abbr>';
 				} else {
-					$oid_arcs = explode('.',$this->oid);
+					$oid_arcs = explode('.',$this->pen);
 					$weid_num = $oid_arcs[(count($oid_arcs)-1)-(count($weid_arcs)-1)+($i+1)];
 					if ($weid_num != $weid) {
 						$weid = '<abbr title="'._L('Numeric value').': '.$weid_num.'">'.$weid.'</abbr>';
@@ -81,7 +81,8 @@ class OIDplusIanaPen extends OIDplusObject {
 	}
 	public static function secmail($emailaddress){
 		$email= $emailaddress;           
-		$length = strlen($email); 
+		$length = strlen($email);
+		$obfuscatedEmail='';
 		for ($i = 0; $i < $length; $i++){
 			$obfuscatedEmail .= "&#" . \ord($email[$i]).";";
 		} 
@@ -103,19 +104,26 @@ class OIDplusIanaPen extends OIDplusObject {
 	}
 
 	public static function parse($node_id) {
+		// TODO:  if ($node_id == 'pen:') return new self('');
 		if(is_numeric($node_id)){
 			$node_id = self::ns().':'.$node_id;
 		}
 		@list($namespace, $pen) = explode(':', $node_id, 2);
+		if($namespace !== self::ns() )return false;
+		
+		/*
 		if ($pen !== 'oid:1.3.6.1.4.1' 
-			&& $pen !== self::root() 
+			&& $pen.':' !== self::root() 
 			&& ($namespace !== self::ns() && !is_numeric($pen) )) return false;
 		//$pen = $pen !== self::root() && $pen !== 'oid:1.3.6.1.4.1' && $namespace === self::ns() && is_numeric($pen) ? intval($pen) : $pen;
- 
+ */
 		$object = new self($pen);
-		if( $pen && $pen !== self::root()  && 
+		/*
+		if( $pen && $pen.':' !== self::root()  && 
 		   !$object->isRoot() && !is_array($object->getData()) )return false;
 		
+		if(!is_array($object->getData())  && $pen.':' !== self::root() )return false;
+		 */
 	  return $object;
 	}
 
@@ -135,13 +143,14 @@ class OIDplusIanaPen extends OIDplusObject {
 	public static function root() : string{
 		return self::ns().':';
 		//return 'oid:1.3.6.1.4.1';
+		//return 'pen:1.3.6.1.4.1';
 	}
 
 	public function isRoot() :bool{
 		// Ärghühhh????// 
 	 
 		return// 0===0 ||
-			is_array($this->getData()) || 
+			is_array($this->getData()) ||
 			$this->nodeId(true) === self::root() 
 			 // || $this->pen === self::ns()
 				// || $this->pen === self::ns().':' 
@@ -196,7 +205,12 @@ class OIDplusIanaPen extends OIDplusObject {
 		return $this->defaultTitle();
 	}
 	public function getDescription()  :string{
-		return $this->getCanonicalOid().' is a Private Enterprise Number assigned by IANA for '.$this->getData()['org']
+		 $data = $this->getData();
+		$org = is_array($data) && isset($data['org']) ? $data['org'] : false;
+		if(false===$org){
+		 return 'Private Enterprise Numbers are assigned by IANA https://www.iana.org.';			
+		}
+		return $this->getCanonicalOid().' is a Private Enterprise Number assigned by IANA for '.$org
 			.', it should be listed at https://www.iana.org/assignments/enterprise-numbers/enterprise-numbers .';
 	}	
 	public function isLeafNode() :bool{
@@ -204,7 +218,8 @@ class OIDplusIanaPen extends OIDplusObject {
 	}
 	
 	public function getRaMail() {
-		return $this->getData()['email'];
+		 $data = $this->getData();
+		return is_array($data) && isset($data['email']) ? $data['email'] : false;
 	}
 	
 	public function getContentPage(&$title, &$content, &$icon) {
@@ -221,8 +236,9 @@ class OIDplusIanaPen extends OIDplusObject {
 		
 		  //  $content.='Re: '.$this->getRaMail();
 		   $content.= '<p>'.$this->getDescription().'</p>';
-		
-		  foreach($this->getData() as $k => $v){
+		  $data = $this->getData();
+		if(is_array($data)){
+		  foreach($data as $k => $v){
 			  switch($k){
 				  case 'oid' : 	
 					    $k = 'OID';
@@ -248,6 +264,7 @@ class OIDplusIanaPen extends OIDplusObject {
 			  $content.= '<p><legend style="display:inline;float:left;">'.ucfirst($k)
 				  .'</legend><span style="display:inline;float:right;max-width:320px;">'.$v.'</span></p>'; 
 		  }
+		}//is array $data
 	 	
 	 		if ($this->nodeId(true) === self::root()  ) {
 				if (OIDplus::authUtils()->isAdminLoggedIn()) {
@@ -283,7 +300,7 @@ class OIDplusIanaPen extends OIDplusObject {
 		return false;		
 	}	
     	
-	public function userHasParentalWriteRights($ra_email=null) {			
+	public function userHasParentalWriteRights($ra_email=null) :bool{			
 		return false;		
 	}	
     
