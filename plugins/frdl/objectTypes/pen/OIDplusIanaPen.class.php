@@ -202,7 +202,9 @@ class OIDplusIanaPen extends OIDplusObject {
 	}
 
 	public function defaultTitle() :string{
-		return $this->nodeId(true) === self::root() ? self::objectTypeTitle() : $this->getData()['org'].' ('.$this->getCanonicalOid().')';
+		 $data = $this->getData();
+		 $org = is_array($data) && isset($data['org']) ? $data['org'] : '';
+		return $this->nodeId(true) === self::root() ? self::objectTypeTitle() : $org.' ('.$this->getCanonicalOid().')';
 	}
 	public function getTitle()  :string{
 		return $this->defaultTitle();
