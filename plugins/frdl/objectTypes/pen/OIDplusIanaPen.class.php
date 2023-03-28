@@ -244,7 +244,7 @@ class OIDplusIanaPen extends OIDplusObject {
 					    $k = 'OID';
 					  break;
 				  case 'id' : 			 
-				        $v = 'iana-pen:'.$v;
+				        $v = 'iana-pen:'.$this->nodeId(false);
 					    $k = 'ID';
 					  break;
 				  case 'email' : 					  
