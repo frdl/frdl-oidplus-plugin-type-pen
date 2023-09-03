@@ -26,7 +26,7 @@ use ViaThinkSoft\OIDplus\OIDplusObject;
 use ViaThinkSoft\OIDplus\OIDplusException; 
 
 class OIDplusObjectTypePluginIanaPen extends OIDplusObjectTypePlugin
-implements ViaThinkSoft\OIDplus\INTF_OID_1_3_6_1_4_1_37476_2_5_2_3_4, /* whois*Attributes */
+implements ViaThinkSoft\OIDplus\INTF_OID_1_3_6_1_4_1_37476_2_5_2_3_4 /* whois*Attributes */
 {
 	public function whoisObjectAttributes($id, &$out){
 	 
