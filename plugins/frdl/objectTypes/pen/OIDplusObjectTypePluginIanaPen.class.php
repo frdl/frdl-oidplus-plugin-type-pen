@@ -25,7 +25,9 @@ use ViaThinkSoft\OIDplus\OIDplusPagePluginPublic;
 use ViaThinkSoft\OIDplus\OIDplusObject;
 use ViaThinkSoft\OIDplus\OIDplusException; 
 
-class OIDplusObjectTypePluginIanaPen extends OIDplusObjectTypePlugin {
+class OIDplusObjectTypePluginIanaPen extends OIDplusObjectTypePlugin
+implements ViaThinkSoft\OIDplus\INTF_OID_1_3_6_1_4_1_37476_2_5_2_3_4, /* whois*Attributes */
+{
 	public function whoisObjectAttributes($id, &$out){
 	 
 		$obj = OIDplusIanaPen::parse($id);
@@ -108,11 +110,6 @@ class OIDplusObjectTypePluginIanaPen extends OIDplusObjectTypePlugin {
 		    'value' => $mail,			
 		   ];			
 		}
-	}
-	
-	public function implementsFeature(string $id): bool {
-		if (strtolower($id) == '1.3.6.1.4.1.37476.2.5.2.3.4') return true; // whois*Attributes 
-		return false;
 	}
 	
 	protected function _mail(string $mail){
