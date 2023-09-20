@@ -149,16 +149,12 @@ class IanaPenListFetcher
 				} 
 			}		
 			
-			$exp = var_export($result, true);
-			$phpCode = <<<PHPCODE
-<?php
- return $exp;
-PHPCODE;			
-			  file_put_contents($this->cachefileResult, $phpCode);	
+			 	
 			$this->list=$result;
+		       file_put_contents($this->cachefileResult, serialize($this->list));
 		}//!cachefile
 		else{
-			$this->list= require $this->cachefileResult;
+			$this->list = unserialize(file_get_contents($this->cachefileResult));
 		}
 		
 		return $this->list;
