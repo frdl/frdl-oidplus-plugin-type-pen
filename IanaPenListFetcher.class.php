@@ -39,6 +39,10 @@ $result = $Fetcher();
  echo print_r($Fetcher('frdl'), true). "\n";
 */
 
+//if installed the plugin from composer prefer its autoloader
+if(!class_exists(IanaPenListFetcher::class, true)){
+
+
 class IanaPenListFetcher
 {
 	protected $url;
@@ -187,3 +191,5 @@ class IanaPenListFetcher
 	
 	
 } 
+
+}//!class_exists
