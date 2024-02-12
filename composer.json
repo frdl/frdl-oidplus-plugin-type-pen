@@ -1,0 +1,16 @@
+{
+    "name": "frdl/frdl-oidplus-plugin-type-pen",
+    "type": "oiplus-plugin-object-types",
+    "description": "OIDplus ObjectType Plugin to lookup external IANA PEN (Private Enterprise Number)",
+    "keywords": ["oiplus", "iana", "pen", "oid"],
+    "license":  ["MIT"],
+    "autoload" : {
+        "classmap" : ["."]
+    },
+    "extra" : {
+        "installer-name" : "io4"
+    },
+    "require" : {
+      "frdl/iana-enterprise-numbers-fetcher" :  "*"
+    }
+}
